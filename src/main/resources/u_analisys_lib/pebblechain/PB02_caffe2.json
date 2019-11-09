@@ -1,0 +1,16 @@
+{
+  "hash_previous" : "caffe58c4e0e81f1b90d40dc74e186be6744f2009eb12fbb0daddaa0863e459b",
+  "links_previous" : [ "https://pastebin.com/mUiUB2dL", "https://docs.google.com/document/d/12vLMWE1PlJQiEpYz599o6OqZ4NCOO12isqGvlBtUu00" ],
+  "target" : "caffe2",
+  "version" : 191105,
+  "owner" : "andrea",
+  "data" : "/*\r\n *  ...",
+  "created_epoch" : 1573190327206,
+  "hash_current" : "caffe2544a6d12722d04ecc24006d9b3339e424723e97bde783d32e7056146c7",
+  "merkel_root" : "bc4e8017dad2b3336e4ce72122c20690838ca39bba7cf545647e6384b5d543a8",
+  "nonce" : 33999357,
+  "value" : 2.889945345,
+  "id" : "💎caffe2#caffe2544a6d12722d04ecc24006d9b3339e424723e97bde783d32e7056146c7",
+  "valid" : true,
+  "createdISO8601" : "2019-11-08T05:18:47.206Z"
+}

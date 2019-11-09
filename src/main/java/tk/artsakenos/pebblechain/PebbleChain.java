@@ -27,7 +27,7 @@ public class PebbleChain {
         for (String link : links_previous) {
             String pb_code = link.substring(link.lastIndexOf("/") + 1);
             System.out.println("Searching for " + pb_code);
-            Pebble pastebin_get = PebbleRepos.pastebin_get(pb_code);
+            Pebble pastebin_get = PebbleRepositories.pastebin_get(pb_code);
             if (pastebin_get != null) {
                 ++depth;
                 System.out.println("WE ARE AT DEPTH " + depth + " with " + pb_code);
