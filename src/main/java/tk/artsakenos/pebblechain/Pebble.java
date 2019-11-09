@@ -48,7 +48,7 @@ public class Pebble implements Serializable {
     private String owner; // Switch to OpenId, plus PGP.
     private String data;
     private long created_epoch;
-    private String hash;
+    private String hash_current;
     private String merkel_root;
     private int nonce = 0;
 
@@ -76,7 +76,7 @@ public class Pebble implements Serializable {
      * P_PREFIX_MINLENGTH, and will be a proof of work giving a value to the
      * Peeble according to the target length and nonce value.
      * @param data The data of the Pebble.
-     * @param hash_current The hash
+     * @param hash_current The hash_current
      * @param created_epoch The epoch
      * @param nonce The nonce
      */
@@ -90,7 +90,7 @@ public class Pebble implements Serializable {
         this.links_previous = links_previous;
         this.data = data;
         this.target = prefix;
-        this.hash = hash_current;
+        this.hash_current = hash_current;
         this.nonce = nonce;
         this.version = version;
         this.owner = owner;
@@ -122,7 +122,7 @@ public class Pebble implements Serializable {
                 this.setCreated_epoch(Calendar.getInstance().getTimeInMillis());
             }
         }
-        setHash(hashGuess);
+        setHash_current(hashGuess);
     }
 
     private void verboseMining() {
@@ -145,10 +145,10 @@ public class Pebble implements Serializable {
      */
     public boolean isValid() {
         this.merkel_root = retrieveMerkelRoot(this, getVersion());
-        String hash = computeHash(P_ALGORITHM, retrieveHeader());
+        String hash_computed = computeHash(P_ALGORITHM, retrieveHeader());
         String message = "";
 
-        if (!hash.equals(this.hash)) {
+        if (!hash_computed.equals(this.hash_current)) {
             message += "Hash Signature doesn't match; ";
         }
 
@@ -181,11 +181,11 @@ public class Pebble implements Serializable {
         return getId() + ", " + getNonce();
     }
 
-    public static String toJson(Pebble pebble) {
+    public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
         try {
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(pebble);
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException ex) {
             Logger.getLogger(Pebble.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -263,14 +263,14 @@ public class Pebble implements Serializable {
 
     // -------------------------------------------------------------------------
     /**
-     * @return the hash
+     * @return the hash_current
      */
-    public String getHash() {
-        return hash;
+    public String getHash_current() {
+        return hash_current;
     }
 
     /**
-     * @return the hash
+     * @return the hash_current
      */
     public String getHash_previous() {
         return hash_previous;
@@ -314,12 +314,13 @@ public class Pebble implements Serializable {
 
     /**
      * The value of the Pebble. The price is calculated according to some
-     * variables which more or less represent the calculation time.
+     * variables which more or less represent the calculation time. To review.
+     * The nonce should be the minimum allowing the target to be reached.
      *
-     * @return
+     * @return a block pseudo-value
      */
     public double getValue() {
-        return Math.pow(10, getTarget().length() - 15) * getNonce() * retrieveHeader().length();
+        return Math.pow(10, getTarget().length() - 20) * getNonce() * retrieveHeader().length();
     }
 
     /**
@@ -328,7 +329,7 @@ public class Pebble implements Serializable {
      * @return a Pebble identifier
      */
     public String getId() {
-        return "💎" + getTarget() + "#" + getHash();
+        return "💎" + getTarget() + "#" + getHash_current();
     }
 
     /**
@@ -429,10 +430,10 @@ public class Pebble implements Serializable {
     }
 
     /**
-     * @param hash the hash to set
+     * @param hash_current the hash_current to set
      */
-    public void setHash(String hash) {
-        this.hash = hash;
+    public void setHash_current(String hash_current) {
+        this.hash_current = hash_current;
     }
 
     /**

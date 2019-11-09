@@ -55,9 +55,9 @@ from: caffe58c4e0e81f1b90d40dc74e186be6744f2009eb12fbb0daddaa0863e459b
 
 Available @
 
-* Pastebin: https://pastebin.com/MWuqVru2; 
-* Reddit:https://reddit.com/r/BricioleDiPane/comments/dtarkx/; 
-* Youtube:https://youtu.be/VusDvPl8OJo;
+* Pastebin: https://pastebin.com/MWuqVru2 
+* Reddit: https://www.reddit.com/dtarkx
+* Youtube: https://youtu.be/VusDvPl8OJo
 
 See: https://twitter.com/artsakenos/status/1192677802094428160
 
