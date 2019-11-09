@@ -9,8 +9,8 @@ import net.dean.jraw.models.Submission;
 import tk.artsakenos.iperunits.file.FileManager;
 import tk.artsakenos.iperunits.file.SuperFileText;
 import tk.artsakenos.pebblechain.Pebble;
+import tk.artsakenos.pebblechain.PebbleChain;
 import tk.artsakenos.pebblechain.PebbleException;
-import tk.artsakenos.pebblechain.PebbleRepositories;
 
 /**
  *
@@ -51,14 +51,13 @@ public class TEST_PebbleChain {
         System.out.println(Pebble.toJson(pebble));
         SuperFileText.setText("NextPebble_" + prefix + ".json", Pebble.toJson(pebble));
 
-        String pastebin_post = PebbleRepositories.pastebin_post(pebble);
-        Submission reddit_post = PebbleRepositories.reddit_post("bricioledipane", pebble.getId(), Pebble.toJson(pebble));
-        UltraFFMpeg.subs(Pebble.toJson(pebble)); // Video with subs.
-        PebbleRepositories.brothers = "See - PBin:" + pastebin_post + "; Reddit:" + reddit_post.getId() + ";";
-        PebbleRepositories.twitter_post(pebble);
+        String pastebin_post = PebbleChain.pastebin_post(pebble);
+        Submission reddit_post = PebbleChain.reddit_post("bricioledipane", pebble.getId(), Pebble.toJson(pebble));
+        // UltraFFMpeg.subs(Pebble.toJson(pebble)); // Video with subs.
+        PebbleChain.twitter_post(pebble, pastebin_post, reddit_post.getId());
     }
 
-    public Pebble test_CreatePebble03(String prefix) throws PebbleException {
+    public void test_CreatePebble03(String prefix) throws PebbleException {
 
         String json = SuperFileText.getText("NextPebble_caffe2.json");
         Pebble pebble = Pebble.fromJson(json);
@@ -83,7 +82,10 @@ public class TEST_PebbleChain {
         pebble = new Pebble(owner, data);
         pebble.setHash_previous(hash_previous);
         pebble.setLinks_previous(links_previous);
-        return null;
+        pebble.setTarget("caffe3");
+        pebble.mineBlock();
+        System.out.println(Pebble.toJson(pebble));
+        SuperFileText.setText("NextPebble_" + prefix + ".json", Pebble.toJson(pebble));
     }
 
     public static void main(String[] args) throws PebbleException {

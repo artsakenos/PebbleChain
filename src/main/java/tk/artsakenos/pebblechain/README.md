@@ -15,10 +15,10 @@ The merkel root should always include:
 * target - If you need to validate the target
 * data - The Block data
 
-E.g., according to the Pebble version 20191105 the merkel data (before hashing)
+E.g., according to the version 20191105 the merkel data (before hashing)
 is shaped like this:
 
-    version + "\n"
+      version + "\n"
     + pebble.getHash_previous() + "\n"
     + pebble.getTarget() + "\n"
     + pebble.getOwner() + "\n"
@@ -36,6 +36,7 @@ If recipient is set:
 
 Directory
 =========
+The chain shouldn't rely on a directory. These are the first blocks.
 
 ## 0 Genesis, a Version 191105 block. 
 
