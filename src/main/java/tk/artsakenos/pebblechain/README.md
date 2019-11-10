@@ -61,9 +61,15 @@ Available @
 
 See: https://twitter.com/artsakenos/status/1192677802094428160
 
+## 3 Block 3 - One more ring
 
+💎caffe3#caffe394107279bdca4a310d37f38bf3f9f03409de8878f90370a15e4fa60aa1
 
+from: caffe2544a6d12722d04ecc24006d9b3339e424723e97bde783d32e7056146c7
 
+Available @
 
+* Pastebin - https://pastebin.com/DF5ubs87
+* Reddit - https://reddit.com/dua9f5
 
-
+See: https://twitter.com/artsakenos/status/1193487910667898881

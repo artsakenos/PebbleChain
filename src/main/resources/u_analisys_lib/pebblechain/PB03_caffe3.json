@@ -1,0 +1,16 @@
+{
+  "hash_previous" : "caffe2544a6d12722d04ecc24006d9b3339e424723e97bde783d32e7056146c7",
+  "links_previous" : [ "https://pastebin.com/MWuqVru2", "https://reddit.com/dtarkx" ],
+  "target" : "caffe3",
+  "version" : 191105,
+  "owner" : "andrea",
+  "data" : "In order to corrupt this block you need to hack:\n* Block 0 on GDrive      - https://docs.google.com/document/d/12vLMWE1PlJQiEpYz599o6OqZ4NCOO12isqGvlBtUu00\n* Block 0 on PasteBin    - https://pastebin.com/mUiUB2dL\n* Block 2 on PasteBin    - https://pastebin.com/MWuqVru2\n* Block 2 on Reddit      - https://www.reddit.com/dtarkx\n* Block 2 on Youtube     - https://youtu.be/VusDvPl8OJo (experimental)\nAnd this block, see the twit https://twitter.com/artsakenos/status/1192677802094428160.\nSee more:\nGithub: https://github.com/artsakenos/PebbleChain\nInfoDev: https://infodev.wordpress.com/2019/10/15/pebble-chain\n",
+  "created_epoch" : 1573384642175,
+  "hash_current" : "caffe394107279bdca4a310d37f38bf3f9f03409de8878f90370a15e4fa60aa1",
+  "merkel_root" : "bbdd971e8dbf25ea2e88d0d2907bc2844ace308b0d9b1a356af5f0cc47c43ca7",
+  "nonce" : 5702922,
+  "value" : 4.79045448E-6,
+  "id" : "💎caffe3#caffe394107279bdca4a310d37f38bf3f9f03409de8878f90370a15e4fa60aa1",
+  "createdISO8601" : "2019-11-10T11:17:22.175Z",
+  "valid" : true
+}
