@@ -10,7 +10,6 @@ import com.besaba.revonline.pastebinapi.paste.PasteVisiblity;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.dean.jraw.models.Submission;
-import tk.artsakenos.iperunits.file.SuperFileText;
 import tk.artsakenos.ultraanalysis.CREDENTIALS_INSTANCES;
 import tk.artsakenos.ultraanalysis.UltraSocial.UltraPasteBin;
 import tk.artsakenos.ultraanalysis.UltraSocial.UltraReddit;
@@ -128,6 +127,20 @@ public class PebbleChain {
 
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
+    public Pebble loadFromUrl(String url) throws PebbleException {
+        // https://pastebin.com/mUiUB2dL
+        // https://reddit.com/r/BricioleDiPane/comments/dtarkx
+        // https://www.reddit.com/dtarkx
+        String id = url.substring(url.lastIndexOf("/") + 1);
+        if (url.contains("pastebin.com/")) {
+            return pastebin_get(id);
+        }
+        if (url.contains("reddit.com/")) {
+            return reddit_get(id);
+        }
+        return null;
+    }
+
     /**
      * Naviga all'indietro recuperando i dati in base al servizio. TODO: to be
      * implemented: si controlla il link, si fa una query al servizio. Tutte le
@@ -139,15 +152,15 @@ public class PebbleChain {
     public void validateChain(Pebble pebble, int depth) throws PebbleException {
         String[] links_previous = pebble.getLinks_previous();
         for (String link : links_previous) {
-            String pb_code = link.substring(link.lastIndexOf("/") + 1);
-            System.out.println("Searching for " + pb_code);
-            Pebble pastebin_get = pastebin_get(pb_code);
-            if (pastebin_get != null) {
+            Pebble pebble_next = loadFromUrl(link);
+            if (pebble_next != null) {
                 ++depth;
-                System.out.println("WE ARE AT DEPTH " + depth + " with " + pb_code);
-                validateChain(pastebin_get, ++depth);
+                Logger.getLogger(Pebble.class.getName()).log(Level.INFO, "Found a valid block at depth {0}: {1}.", new Object[]{depth, pebble});
+                validateChain(pebble_next, ++depth);
+                break;
             }
         }
+        Logger.getLogger(Pebble.class.getName()).log(Level.INFO, "Last valid block at depth {0}: {1}.", new Object[]{depth, pebble});
     }
 
 }

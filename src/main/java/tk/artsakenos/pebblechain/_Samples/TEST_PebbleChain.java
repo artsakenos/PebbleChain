@@ -61,25 +61,29 @@ public class TEST_PebbleChain {
 
         String[] links_previous = new String[]{
             "https://pastebin.com/MWuqVru2",
-            "https://reddit.com/r/BricioleDiPane/comments/dtarkx"};
+            "https://reddit.com/dtarkx"};
         String owner = "andrea";
         String data = "In order to corrupt this block you need to hack:\n"
-                + "* Block 0 on GDrive\n"
-                + "* Block 0 on PasteBin\n"
-                + "* Block 2 on PasteBin\n"
-                + "* Block 2 on Reddit\n"
-                + "* Block 2 on Youtube\n"
-                + "And this block.\n"
+                + "* Block 0 on GDrive      - https://docs.google.com/document/d/12vLMWE1PlJQiEpYz599o6OqZ4NCOO12isqGvlBtUu00\n"
+                + "* Block 0 on PasteBin    - https://pastebin.com/mUiUB2dL\n"
+                + "* Block 2 on PasteBin    - https://pastebin.com/MWuqVru2\n"
+                + "* Block 2 on Reddit      - https://www.reddit.com/dtarkx\n"
+                + "* Block 2 on Youtube     - https://youtu.be/VusDvPl8OJo (experimental)\n"
+                + "And this block, see the twit https://twitter.com/artsakenos/status/1192677802094428160.\n"
                 + "See more:\n"
-                + "GithubPage: ...\n"
-                + "InfoDev: ...\n";
+                + "Github: https://github.com/artsakenos/PebbleChain\n"
+                + "InfoDev: https://infodev.wordpress.com/2019/10/15/pebble-chain\n";
 
         Pebble pebble = new Pebble(owner, data);
         pebble.setHash_previous("caffe2544a6d12722d04ecc24006d9b3339e424723e97bde783d32e7056146c7");
         pebble.setLinks_previous(links_previous);
         pebble.setTarget("caffe3");
         pebble.mineBlock();
-        SuperFileText.setText("NextPebble_caffe3.json", pebble.toJson());
+        SuperFileText.setText("NextPebble_" + pebble.getTarget() + ".json", pebble.toJson());
+
+        String idPastebin = PebbleChain.pastebin_post(pebble);
+        String idReddit = PebbleChain.reddit_post("bricioledipane", pebble).getId();
+        PebbleChain.twitter_post(pebble, idPastebin, idReddit);
     }
 
     public static void main(String[] args) throws PebbleException {
