@@ -10,6 +10,7 @@ import com.besaba.revonline.pastebinapi.paste.PasteVisiblity;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.dean.jraw.models.Submission;
+import tk.artsakenos.iperunits.file.SuperFileText;
 import tk.artsakenos.pebblechain.Pebble.PebbleException;
 import tk.artsakenos.ultraanalysis.CREDENTIALS_INSTANCES;
 import tk.artsakenos.ultraanalysis.UltraSocial.UltraPasteBin;
@@ -128,7 +129,7 @@ public class PebbleChain {
 
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
-    public Pebble loadFromUrl(String url) throws PebbleException {
+    public static Pebble loadFromUrl(String url) throws PebbleException {
         // https://pastebin.com/mUiUB2dL
         // https://reddit.com/r/BricioleDiPane/comments/dtarkx
         // https://www.reddit.com/dtarkx

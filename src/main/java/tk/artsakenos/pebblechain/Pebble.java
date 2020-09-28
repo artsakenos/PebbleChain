@@ -16,6 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -194,7 +195,12 @@ public class Pebble implements Serializable {
 
     @Override
     public String toString() {
-        return getId() + ", " + getNonce();
+        return String.format("[%s] Lev:%d; PrevHash:%s; PrevLink:%s; [%s]",
+                getId(),
+                getDepth(),
+                getPreviousHash(),
+                Arrays.toString(getPreviousLinks()),
+                isValid() ? "valid" : "invalid");
     }
 
     public String toJson() {
@@ -265,7 +271,8 @@ public class Pebble implements Serializable {
             for (String link : getPreviousLinks()) {
                 links += link + "\n";
             }
-            merkleData = version + "\n"
+            merkleData
+                    = getVersion() + "\n"
                     + getPreviousHash() + "\n"
                     /**
                      * The target is included to be "declared" before mining.

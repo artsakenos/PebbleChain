@@ -16,21 +16,21 @@ A block header is a 320 bit string built like this:
     
 A block hash is a 256bit -> 64 characters (each 4 bit / 1 hex).
 
-The merkel root should always include:
+The Merkle root should always include:
 
-* hash_previous     - To validate the chain
+* previousHash      - To validate the chain
 * target            - If you need to validate the target
 * data              - The Block data
 
-E.g., according to the version 20191105 the merkel data (before hashing)
+E.g., according to the version 20191105 the Merkle data (before hashing)
 is shaped like this:
 
     version + "\n" +
-    pebble.getHash_previous() + "\n" +
-    pebble.getTarget() + "\n" +
-    pebble.getOwner() + "\n" +
-    links +
-    pebble.getData() + "\n" +
+    getPreviousHash() + "\n" +
+    getTarget() + "\n" +
+    getOwner() + "\n" +
+    links{combined} +
+    getData() + "\n" +
 
 
 Securing Data
@@ -39,6 +39,6 @@ Securing Data
 If recipient is set:
 
 * Data can be encrypted with recipient public key
-* Header can eventually be also encrypted according to some version, so that only recipient can check block validity
-* TODO, i'll use SuperBouncyCastle and Base64 encoding.
+* Header can be encrypted, so that only recipient can check block validity
+* TODO: Use SuperBouncyCastle and Base64 encoding.
 
