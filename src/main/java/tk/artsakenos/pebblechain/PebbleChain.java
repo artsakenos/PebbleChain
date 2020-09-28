@@ -10,6 +10,7 @@ import com.besaba.revonline.pastebinapi.paste.PasteVisiblity;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.dean.jraw.models.Submission;
+import tk.artsakenos.pebblechain.Pebble.PebbleException;
 import tk.artsakenos.ultraanalysis.CREDENTIALS_INSTANCES;
 import tk.artsakenos.ultraanalysis.UltraSocial.UltraPasteBin;
 import tk.artsakenos.ultraanalysis.UltraSocial.UltraTwitter;
@@ -17,8 +18,8 @@ import tk.artsakenos.ultraanalysis.UltraSocial.reddit.UltraReddit;
 import twitter4j.TwitterException;
 
 /**
- * This class contains few example on how to store pebbles on social
- * repositories, and how to navigate and validate the chain.
+ * This class contains a set of tools to store and retrieve pebbles from social
+ * repositories, and to navigate and validate the chain.
  *
  * There is some example facade just to give an idea. To be further improved.
  *
@@ -89,7 +90,7 @@ public class PebbleChain {
         String json = submission.getSelfText();
         long time = submission.getCreated().getTime();
         Pebble pebble = Pebble.fromJson(json);
-        long timeDelta = (time - pebble.getCreated_epoch()) / 1000;
+        long timeDelta = (time - pebble.getCreated()) / 1000;
         Logger.getLogger(Pebble.class.getName()).log(Level.INFO, "Submission {0} from {1}, Time delta {2} seconds.", new Object[]{submissionId, author, timeDelta});
         return pebble;
     }
@@ -114,7 +115,7 @@ public class PebbleChain {
 
     public static void twitter_post(Pebble pebble, String idPastebin, String idReddit) {
         String twit = pebble.getId() + "\n"
-                + "from: " + pebble.getHash_previous() + "\n"
+                + "from: " + pebble.getPreviousHash() + "\n"
                 + "Pastebin - https://pastebin.com/" + idPastebin + ";\n"
                 + "Reddit - https://www.reddit.com/" + idReddit + ";\n";
         try {
@@ -150,7 +151,7 @@ public class PebbleChain {
      * @param pebble
      */
     public void validateChain(Pebble pebble, int depth) throws PebbleException {
-        String[] links_previous = pebble.getLinks_previous();
+        String[] links_previous = pebble.getPreviousLinks();
         for (String link : links_previous) {
             Pebble pebble_next = loadFromUrl(link);
             if (pebble_next != null) {

@@ -3,24 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tk.artsakenos.pebblechain._Samples;
+package tk.artsakenos.pebblechain._Samples_191105;
 
 import net.dean.jraw.models.Submission;
 import tk.artsakenos.iperunits.file.FileManager;
 import tk.artsakenos.iperunits.file.SuperFileText;
 import tk.artsakenos.pebblechain.Pebble;
+import tk.artsakenos.pebblechain.Pebble.PebbleException;
 import tk.artsakenos.pebblechain.PebbleChain;
-import tk.artsakenos.pebblechain.PebbleException;
 
 /**
  *
  * @author Andrea
  */
-public class TEST_PebbleChain {
+public class TEST_PebbleChain_191105 {
 
     public void test_CreateGenesisBlock() throws PebbleException {
         String data = FileManager.getAssetString(this, "/u_analisys_lib/pebblechain/HelloWorld.txt");
-        Pebble pebble = new Pebble("andrea", data);
+        Pebble pebble = new Pebble(data);
+        pebble.setOwner("andrea");
         pebble.mineBlock();
         SuperFileText.setText("GenesisPebble.json", pebble.toJson());
     }
@@ -42,9 +43,10 @@ public class TEST_PebbleChain {
         String data = SuperFileText.getText("./src/main/java/tk/artsakenos/pebblechain/Pebble.java");
 
         System.out.println("Mining block with prefix: " + prefix);
-        Pebble pebble = new Pebble(owner, data);
-        pebble.setHash_previous(hash_previous);
-        pebble.setLinks_previous(links_previous);
+        Pebble pebble = new Pebble(data);
+        pebble.setOwner("andrea");
+        pebble.setPreviousHash(hash_previous);
+        pebble.setPreviousLinks(links_previous);
         pebble.setTarget(prefix);
         pebble.mineBlock();
 
@@ -74,9 +76,9 @@ public class TEST_PebbleChain {
                 + "Github: https://github.com/artsakenos/PebbleChain\n"
                 + "InfoDev: https://infodev.wordpress.com/2019/10/15/pebble-chain\n";
 
-        Pebble pebble = new Pebble(owner, data);
-        pebble.setHash_previous("caffe2544a6d12722d04ecc24006d9b3339e424723e97bde783d32e7056146c7");
-        pebble.setLinks_previous(links_previous);
+        Pebble pebble = new Pebble(data);
+        pebble.setPreviousHash("caffe2544a6d12722d04ecc24006d9b3339e424723e97bde783d32e7056146c7");
+        pebble.setPreviousLinks(links_previous);
         pebble.setTarget("caffe3");
         pebble.mineBlock();
         SuperFileText.setText("NextPebble_" + pebble.getTarget() + ".json", pebble.toJson());
@@ -87,7 +89,7 @@ public class TEST_PebbleChain {
     }
 
     public static void main(String[] args) throws PebbleException {
-        final TEST_PebbleChain test = new TEST_PebbleChain();
+        final TEST_PebbleChain_191105 test = new TEST_PebbleChain_191105();
         String prefix = args.length < 1 ? "caffe00" : args[0];
     }
 

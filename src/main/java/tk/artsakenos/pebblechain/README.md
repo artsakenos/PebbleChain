@@ -1,75 +1,44 @@
 
-Super light blochchain based on free repositories and Social Networks.
+Super light BlockChain targeted for free distribution,
+e.g., on free repositories and Social Networks or printed paper.
 
 Pebble
 ======
 
+A Pebble is composed by some data and some block properties (see JavaDoc).
+You just need to instantiate it according to your needs.
+
 A block header is a 320 bit string built like this:
 
-    [getMerkel_root()][getCreated_epoch()][getNonce()    ]
-    [256bit (64Hex)  ][4byte (1 Long)    ][4byte (1 Long)]
+    [getMerkle()  ]    [256bit (64 Hex) ]
+    [getCreated() ]    [4byte  (1 Long) ]
+    [getNonce()   ]    [4byte  (1 Long) ]
+    
+A block hash is a 256bit -> 64 characters (each 4 bit / 1 hex).
 
 The merkel root should always include:
 
-* hash_previous - To validate the chain
-* target - If you need to validate the target
-* data - The Block data
+* hash_previous     - To validate the chain
+* target            - If you need to validate the target
+* data              - The Block data
 
 E.g., according to the version 20191105 the merkel data (before hashing)
 is shaped like this:
 
-      version + "\n"
-    + pebble.getHash_previous() + "\n"
-    + pebble.getTarget() + "\n"
-    + pebble.getOwner() + "\n"
-    + links
-    + pebble.getData() + "\n"
+    version + "\n" +
+    pebble.getHash_previous() + "\n" +
+    pebble.getTarget() + "\n" +
+    pebble.getOwner() + "\n" +
+    links +
+    pebble.getData() + "\n" +
+
 
 Securing Data
 =============
+
 If recipient is set:
 
 * Data can be encrypted with recipient public key
 * Header can eventually be also encrypted according to some version, so that only recipient can check block validity
 * TODO, i'll use SuperBouncyCastle and Base64 encoding.
 
-
-Directory
-=========
-The chain shouldn't rely on a directory. These are the first blocks.
-
-## 0 Genesis, a Version 191105 block. 
-
-💎caffe#caffe58c4e0e81f1b90d40dc74e186be6744f2009eb12fbb0daddaa0863e459b
-
-Available @:
-
-* https://pastebin.com/mUiUB2dL
-* https://docs.google.com/document/d/12vLMWE1PlJQiEpYz599o6OqZ4NCOO12isqGvlBtUu00
-
-## 2 MandatoDue Block
-
-💎caffe2#caffe2544a6d12722d04ecc24006d9b3339e424723e97bde783d32e7056146c7
-
-from: caffe58c4e0e81f1b90d40dc74e186be6744f2009eb12fbb0daddaa0863e459b
-
-Available @
-
-* Pastebin: https://pastebin.com/MWuqVru2 
-* Reddit: https://www.reddit.com/dtarkx
-* Youtube: https://youtu.be/VusDvPl8OJo
-
-See: https://twitter.com/artsakenos/status/1192677802094428160
-
-## 3 Block 3 - One more ring
-
-💎caffe3#caffe394107279bdca4a310d37f38bf3f9f03409de8878f90370a15e4fa60aa1
-
-from: caffe2544a6d12722d04ecc24006d9b3339e424723e97bde783d32e7056146c7
-
-Available @
-
-* Pastebin - https://pastebin.com/DF5ubs87
-* Reddit - https://reddit.com/dua9f5
-
-See: https://twitter.com/artsakenos/status/1193487910667898881

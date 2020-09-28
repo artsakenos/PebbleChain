@@ -22,34 +22,36 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * First case study of a "social repositories" based chain. A pebble of the
- * PebbleChain.
+ * A block of a "social targeted" BlockChain. A pebble of the PebbleChain.
  *
- * @author Andrea
+ * @author artsakenos
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Pebble implements Serializable {
 
     public static final String P_ALGORITHM = "SHA-256";
-    public static final String P_HASHSTART = "💎THROWN#GENESIS";
-    public static final String[] P_LINKSTART = new String[]{};
+    public static final String P_START_HASH = "💎THROWN#GENESIS";
+    public static final String[] P_START_LINKS = new String[]{};
+    public static final String P_START_TARGET = "bc00";
     public static final int P_PREFIX_MINLENGTH = 4;
     public static final int P_DATA_MAXSIZE = 10 * 1024 * 1024;
 
+    // Pebble Properties
     public static final int VERSION_20191105 = 191105;
+    public static final int VERSION_20191210 = 191210;
 
-    private String hash_previous = P_HASHSTART;
-    private String[] links_previous = P_LINKSTART;
-    private String target = "0000";
+    private String previousHash = P_START_HASH;
+    private String[] previousLinks = P_START_LINKS;
+    private String target = P_START_TARGET;
     private int version = VERSION_20191105;
     private int depth = -1;
     private boolean verbose = true;
 
-    private String owner; // Switch to OpenId, plus PGP.
-    private String data;
-    private long created_epoch;
-    private String hash_current;
-    private String merkel_root;
+    private String owner;   // Can exploit OpenId, plus PGP.
+    private String data;    // Can be a BASE64 representation of an object.
+    private long created;
+    private String hash;
+    private String merkle;
     private int nonce = 0;
 
     // -------------------------------------------------------------------------
@@ -59,57 +61,64 @@ public class Pebble implements Serializable {
     /**
      * Creates a new Pebble.
      *
-     * @param owner
-     * @param data
-     * @throws PebbleException
+     * @param data The Data. Can be a BASE64 representation of an Object.
+     * @throws PebbleException The PebbleException.
      */
-    public Pebble(String owner, String data) throws PebbleException {
-        this(P_HASHSTART, P_LINKSTART, "0000", owner, data, null, Calendar.getInstance(Locale.getDefault()).getTimeInMillis(), VERSION_20191105, 0);
+    public Pebble(String data) throws PebbleException {
+        this(P_START_HASH, P_START_LINKS, P_START_TARGET, P_START_TARGET, data, null, Calendar.getInstance(Locale.getDefault()).getTimeInMillis(), VERSION_20191210, 0);
     }
 
     /**
-     * Loads an existing Peeble
+     * Loads an existing Pebble.
      *
-     * @param hash_previous The Hash of the previous Pebble in the Chain
-     * @param link_previous The link URI where to find the previous Pebble
+     * @param previousHash The Hash of the previous Pebble in the Chain (null if
+     * genesis)
+     * @param previousLinks The link URI where to find the previous Pebbles
      * @param prefix The chosen target. Lower cased hex. Its length must be >
      * P_PREFIX_MINLENGTH, and will be a proof of work giving a value to the
-     * Peeble according to the target length and nonce value.
+     * Pebble according to the target length and nonce value.
      * @param data The data of the Pebble.
-     * @param hash_current The hash_current
-     * @param created_epoch The epoch
-     * @param nonce The nonce
+     * @param hash The hash.
+     * @param created_epoch The epoch.
+     * @param nonce The nonce.
      */
-    public Pebble(String hash_previous, String[] links_previous, String prefix, String owner, String data,
-            String hash_current, long created_epoch, int version, int nonce) throws PebbleException {
+    public Pebble(String previousHash, String[] previousLinks, String prefix, String owner, String data,
+            String hash, long created_epoch, int version, int nonce) throws PebbleException {
         if (!prefix.matches("-?[0-9a-f]+")) {
             throw new PebbleException(PebbleException.ET_INVALID_HEX, prefix + " is not exadecimal.");
         }
-        this.created_epoch = created_epoch;
-        this.hash_previous = hash_previous;
-        this.links_previous = links_previous;
+        this.created = created_epoch;
+        this.previousHash = previousHash;
+        this.previousLinks = previousLinks;
         this.data = data;
         this.target = prefix;
-        this.hash_current = hash_current;
+        this.hash = hash;
         this.nonce = nonce;
         this.version = version;
         this.owner = owner;
+
+        if (hash != null && !isValid()) {
+            throw new PebbleException(PebbleException.ET_INVALID_HEX, "Hash is not valid.");
+        }
     }
 
     /**
-     * The Header is a 264 bit (33 byte) string used to sign the block. Two
-     * sub-block apart from the Markle Root, because once the version is chosen
+     * The Header is a 320 bit (40 byte) string used to sign the block. Two
+     * sub-block apart from the Merkle Root, because once the version is chosen
      * they're the ones who knock the door.
      *
      * @return the block header
      */
     private String retrieveHeader() {
-        return getMerkel_root() + getCreated_epoch() + getNonce();
+        return getMerkle() + getCreated() + getNonce();
     }
 
+    /**
+     * Mines the block, making it valid. Sets its Merkle.
+     */
     public void mineBlock() {
-        this.merkel_root = retrieveMerkelRoot(this, getVersion());
-        this.setCreated_epoch(Calendar.getInstance().getTimeInMillis());
+        this.merkle = retrieveMerkleRoot();
+        this.setCreated(Calendar.getInstance().getTimeInMillis());
         String hashGuess = "";
         while (!hashGuess.startsWith(target)) {
             ++nonce;
@@ -119,12 +128,15 @@ public class Pebble implements Serializable {
             }
             // Updates timestamp time to time
             if (nonce % 1_000_000 == 0) {
-                this.setCreated_epoch(Calendar.getInstance().getTimeInMillis());
+                this.setCreated(Calendar.getInstance().getTimeInMillis());
             }
         }
-        setHash_current(hashGuess);
+        setHash(hashGuess);
     }
 
+    /**
+     * Shows the progress of the mining process.
+     */
     private void verboseMining() {
         if (getNonce() % 10_000 == 0) {
             System.out.print(".");
@@ -138,17 +150,17 @@ public class Pebble implements Serializable {
     }
 
     /**
-     * Check given rules.
+     * Check if a Pebble is valid according to its version.
      *
      * @return true if the Pebble is considered valid (rules can vary according
      * to the version).
      */
-    public boolean isValid() {
-        this.merkel_root = retrieveMerkelRoot(this, getVersion());
+    public final boolean isValid() {
+        this.merkle = retrieveMerkleRoot();
         String hash_computed = computeHash(P_ALGORITHM, retrieveHeader());
         String message = "";
 
-        if (!hash_computed.equals(this.hash_current)) {
+        if (!hash_computed.equals(this.hash)) {
             message += "Hash Signature doesn't match; ";
         }
 
@@ -158,8 +170,12 @@ public class Pebble implements Serializable {
         }
 
         // Check Previous Links
-        if (getLinks_previous() == null) {
+        if (getPreviousLinks() == null) {
             message += "Previous_link can't be null, can be empty though; ";
+        }
+
+        if (retrieveMerkleRoot() == null) {
+            message += "Merkle Root is null; ";
         }
 
         // Check Data Length, 10MB maximum right now.
@@ -205,13 +221,19 @@ public class Pebble implements Serializable {
 
     // -------------------------------------------------------------------------
     /**
-     * Compute Hash of the Data according to the seleced Algorithm, e.g.,
+     * Compute Hash of the Data according to the selected Algorithm, e.g.,
      * SHA256.
      *
-     * @param dataToHash
-     * @return Hash of the data
+     * @param dataToHash The Data
+     * @return Hash of the data The Corresponding Hash
      */
     public final String computeHash(String algorithm, String dataToHash) {
+
+        if (algorithm == null || dataToHash == null) {
+            Logger.getLogger(Pebble.class.getName()).log(Level.SEVERE, "Algorithm and Data can't be null in computeHash(...)");
+            return null;
+        }
+
         MessageDigest digest;
         byte[] bytes;
         try {
@@ -229,65 +251,70 @@ public class Pebble implements Serializable {
     }
 
     /**
-     * Retrieve the Merkel Root Hash to build the header, according to the
+     * Retrieve the Merkle Root Hash to build the header, according to the
      * pebble version.
      *
-     * @param pebble A pabble.
-     * @param version The version.
-     * @return The merkel root.
+     * @param pebble A pebble.
+     * @return The Merkle root.
      */
-    public String retrieveMerkelRoot(Pebble pebble, int version) {
-        String merkel_data = null;
+    private String retrieveMerkleRoot() {
+        String merkleData = null;
 
-        if (version == VERSION_20191105) {
+        if (version == VERSION_20191105 || version == VERSION_20191210) {
             String links = "";
-            for (String link : pebble.getLinks_previous()) {
+            for (String link : getPreviousLinks()) {
                 links += link + "\n";
             }
-            merkel_data = version + "\n"
-                    + pebble.getHash_previous() + "\n"
+            merkleData = version + "\n"
+                    + getPreviousHash() + "\n"
                     /**
                      * The target is included to be "declared" before mining.
                      */
-                    + pebble.getTarget() + "\n"
-                    + pebble.getOwner() + "\n"
+                    + getTarget() + "\n"
+                    + getOwner() + "\n"
                     + links
                     /**
                      * In other version could be a transaction encrypted with
                      * the owner private key.
                      */
-                    + pebble.getData() + "\n";
+                    + getData() + "\n";
         }
-        return computeHash(P_ALGORITHM, merkel_data);
+
+        if (merkleData == null) {
+            Logger.getLogger(Pebble.class.getName()).log(Level.SEVERE, "Error: no Merkle with version {0}.", version);
+            return null;
+        }
+
+        return computeHash(P_ALGORITHM, merkleData);
     }
 
     // -------------------------------------------------------------------------
     /**
-     * @return the hash_current
+     * @return the hash
      */
-    public String getHash_current() {
-        return hash_current;
+    public String getHash() {
+        return hash;
     }
 
     /**
-     * @return the hash_current
+     * @return the hash
      */
-    public String getHash_previous() {
-        return hash_previous;
+    public String getPreviousHash() {
+        return previousHash;
     }
 
     /**
-     * @return the created_epoch
+     * @return the created
      */
-    public long getCreated_epoch() {
-        return created_epoch;
+    public long getCreated() {
+        return created;
     }
 
     /**
      * @return the link_previous
      */
-    public String[] getLinks_previous() {
-        return links_previous;
+    public String[] getPreviousLinks() {
+        return previousLinks;
     }
 
     /**
@@ -313,9 +340,12 @@ public class Pebble implements Serializable {
     }
 
     /**
-     * The value of the Pebble. The price is calculated according to some
-     * variables which more or less represent the calculation time. To review.
-     * The nonce should be the minimum allowing the target to be reached.
+     * The value of the Pebble. The price is calculated according to an
+     * opinionated view taking into account the calculation time.
+     *
+     * In this case, The nonce should be the minimum allowing the target to be
+     * reached. Which is not if you selected it randomly, or if you reset it
+     * during the computation.
      *
      * @return a block pseudo-value
      */
@@ -329,16 +359,16 @@ public class Pebble implements Serializable {
      * @return a Pebble identifier
      */
     public String getId() {
-        return "💎" + getTarget() + "#" + getHash_current();
+        return "💎" + getTarget() + "#" + getHash();
     }
 
     /**
      * Creation date in IS8601
      *
-     * @return The date created
+     * @return the date created in Milliseconds Epoch Time
      */
     public String getCreatedISO8601() {
-        return Instant.ofEpochMilli(getCreated_epoch()).toString();
+        return Instant.ofEpochMilli(getCreated()).toString();
     }
 
     /**
@@ -349,24 +379,24 @@ public class Pebble implements Serializable {
     }
 
     /**
-     * @return the owner
+     * @return the owner of the Pebble
      */
     public String getOwner() {
         return owner;
     }
 
     /**
-     * @param hash_previous the hash_previous to set
+     * @param previousHash the previousHash to set
      */
-    public void setHash_previous(String hash_previous) {
-        this.hash_previous = hash_previous;
+    public void setPreviousHash(String previousHash) {
+        this.previousHash = previousHash;
     }
 
     /**
-     * @param links_previous the links_previous to set
+     * @param previousLinks the previousLinks to set
      */
-    public void setLinks_previous(String[] links_previous) {
-        this.links_previous = links_previous;
+    public void setPreviousLinks(String[] previousLinks) {
+        this.previousLinks = previousLinks;
     }
 
     /**
@@ -423,24 +453,24 @@ public class Pebble implements Serializable {
     }
 
     /**
-     * @param created_epoch the created_epoch to set
+     * @param created the created to set
      */
-    public void setCreated_epoch(long created_epoch) {
-        this.created_epoch = created_epoch;
+    public void setCreated(long created) {
+        this.created = created;
     }
 
     /**
-     * @param hash_current the hash_current to set
+     * @param hash the hash to set
      */
-    public void setHash_current(String hash_current) {
-        this.hash_current = hash_current;
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     /**
-     * @return the merkel_root
+     * @return the Merkle
      */
-    public String getMerkel_root() {
-        return merkel_root;
+    public String getMerkle() {
+        return merkle;
     }
 
     /**
@@ -451,4 +481,18 @@ public class Pebble implements Serializable {
     }
 
     // -------------------------------------------------------------------------
+    /**
+     * A PebbleException.
+     *
+     * @author artsakenos
+     */
+    public class PebbleException extends IOException {
+
+        public static final String ET_INVALID_HEX = "Invalid Hex";
+
+        public PebbleException(String type, String message) {
+            super("[" + type + "] " + message);
+        }
+
+    }
 }
