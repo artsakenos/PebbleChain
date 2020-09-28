@@ -4,10 +4,10 @@ Super light blochchain based on free repositories and Social Networks.
 Pebble
 ======
 
-A block header is a 264 bit string built like this:
+A block header is a 320 bit string built like this:
 
-    [getMerkel_root()][getCreated_epoch()][getNonce()   ]
-    [256bit (64Hex)  ][4bit (1 Long)     ][4bit (1 Long)]
+    [getMerkel_root()][getCreated_epoch()][getNonce()    ]
+    [256bit (64Hex)  ][4byte (1 Long)    ][4byte (1 Long)]
 
 The merkel root should always include:
 

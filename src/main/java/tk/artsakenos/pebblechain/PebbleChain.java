@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 import net.dean.jraw.models.Submission;
 import tk.artsakenos.ultraanalysis.CREDENTIALS_INSTANCES;
 import tk.artsakenos.ultraanalysis.UltraSocial.UltraPasteBin;
-import tk.artsakenos.ultraanalysis.UltraSocial.UltraReddit;
 import tk.artsakenos.ultraanalysis.UltraSocial.UltraTwitter;
+import tk.artsakenos.ultraanalysis.UltraSocial.reddit.UltraReddit;
 import twitter4j.TwitterException;
 
 /**
