@@ -53,25 +53,11 @@ public class TEST_PebbleChain_191210 {
         System.out.println(pebble.toJson());
     }
 
-    public void test_checkChainValidity() throws Pebble.PebbleException {
-        int depth = 99;
-        String pastebin = "https://pastebin.com/9U9Z0R8b";
-        Pebble pebble = PebbleChain.loadFromUrl(pastebin);
-        pebble.setDepth(depth);
-        System.out.println(pebble);
-
-        while (pebble.getPreviousLinks().length > 0) {
-            pebble = PebbleChain.loadFromUrl(pebble.getPreviousLinks()[0]);
-            pebble.setDepth(--depth);
-            System.out.println(pebble);
-        }
-    }
-
     public static void main(String[] args) throws Pebble.PebbleException {
         TEST_PebbleChain_191210 test = new TEST_PebbleChain_191210();
         // test.test_01_createAndPostGenesis();
         // test.test_02_createNextPebble();
-        test.test_checkChainValidity();
+        PebbleChain.validateChain(PebbleChain.pastebin_get("9U9Z0R8b"), 0);
         // test.test_check_validity("ktKHKD9p");
     }
 

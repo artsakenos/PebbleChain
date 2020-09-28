@@ -2,6 +2,8 @@
 Super light BlockChain targeted for free distribution,
 e.g., on free repositories and Social Networks or printed paper.
 
+PebbleChain is part of the UltraAnalysis libraries.
+
 Pebble
 ======
 

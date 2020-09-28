@@ -10,9 +10,7 @@ import com.besaba.revonline.pastebinapi.paste.PasteVisiblity;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.dean.jraw.models.Submission;
-import tk.artsakenos.iperunits.file.SuperFileText;
 import tk.artsakenos.pebblechain.Pebble.PebbleException;
-import tk.artsakenos.ultraanalysis.CREDENTIALS_INSTANCES;
 import tk.artsakenos.ultraanalysis.UltraSocial.UltraPasteBin;
 import tk.artsakenos.ultraanalysis.UltraSocial.UltraTwitter;
 import tk.artsakenos.ultraanalysis.UltraSocial.reddit.UltraReddit;
@@ -29,9 +27,9 @@ import twitter4j.TwitterException;
 public class PebbleChain {
 
     private static final UltraPasteBin PASTEBIN = new UltraPasteBin(UltraPasteBin.UPB_DEVELOPER_KEY_02);
-    private static final UltraReddit REDDIT = CREDENTIALS_INSTANCES.getUltraReddit(1);
+    private static final UltraReddit REDDIT = null; // CREDENTIALS_INSTANCES.getUltraReddit(1);
     // Twitter is useful for tracking purposes.
-    private static final UltraTwitter TWITTER = CREDENTIALS_INSTANCES.getUltraTwitter();
+    private static final UltraTwitter TWITTER = null; // CREDENTIALS_INSTANCES.getUltraTwitter();
     // Using Facebook API became unfeasible. Unless you're a big corporation you can not even post on your wall.
     // private static final UltraFacebook FACEBOOK = CREDENTIALS_INSTANCES.getUltraFacebook();
     // UltraSms, useful to warn on your mobile phone of a completed mining process
@@ -57,7 +55,7 @@ public class PebbleChain {
      *
      * @param pastebinId The pastebin id, e.g., https://pastebin.com/{id}
      * @return the corresponding pebble
-     * @throws PebbleException
+     * @throws PebbleException The PebbleException
      */
     public static Pebble pastebin_get(String pastebinId) throws PebbleException {
         String jsonPebble = PASTEBIN.getRawPaste(pastebinId);
@@ -151,7 +149,7 @@ public class PebbleChain {
      *
      * @param pebble
      */
-    public void validateChain(Pebble pebble, int depth) throws PebbleException {
+    public static void validateChain(Pebble pebble, int depth) throws PebbleException {
         String[] links_previous = pebble.getPreviousLinks();
         for (String link : links_previous) {
             Pebble pebble_next = loadFromUrl(link);
@@ -162,7 +160,9 @@ public class PebbleChain {
                 break;
             }
         }
-        Logger.getLogger(Pebble.class.getName()).log(Level.INFO, "Last valid block at depth {0}: {1}.", new Object[]{depth, pebble});
+        if (links_previous.length == 0) {
+            Logger.getLogger(Pebble.class.getName()).log(Level.INFO, "Last valid block at depth {0}: {1}.", new Object[]{depth, pebble});
+        }
     }
 
 }
